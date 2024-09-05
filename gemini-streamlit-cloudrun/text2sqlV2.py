@@ -22,8 +22,8 @@ LOCATION = os.environ.get('GCP_REGION')   #Your Google Cloud Project Region
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 client = bigquery.Client(project=PROJECT_ID)
 
-BQ_PROJECT_ID = "prj-p-ucbr-prod-ia-6ae3"  # @param {type:"string"}
-BQ_LINKED_DATASET = "demoRAGQaRaiaDrogasil"  # @param {type:"string"}
+BQ_PROJECT_ID = "devhelio"  # @param {type:"string"}
+BQ_LINKED_DATASET = "pharma"  # @param {type:"string"}
 BQ_PROCESSED_DATASET = "Teste_txt2sql"  # @param {type:"string"}
 MODEL_ID = "text-bison@001" # @param {type:"string"}
 
@@ -36,7 +36,7 @@ model = TextGenerationModel.from_pretrained(MODEL_ID)
 MODEL_ID2 = "gemini-pro" # @param {type:"string"}
 
 model2 = GenerativeModel(MODEL_ID2)
-table_name = 'SalesRaiaDrogasilOBT'
+table_name = 'sales'
 
 
 QUERY = f"""\

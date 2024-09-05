@@ -14,13 +14,16 @@ import numpy as np
 import pandas as pd
 from vertexai.language_models import TextGenerationModel
 import re
+
+
+
 PROJECT_ID = os.environ.get('GCP_PROJECT') #Your Google Cloud Project ID
 LOCATION = os.environ.get('GCP_REGION')   #Your Google Cloud Project Region
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 client = bigquery.Client(project=PROJECT_ID)
 
-BQ_PROJECT_ID = "prj-p-ucbr-prod-ia-6ae3"  # @param {type:"string"}
-BQ_LINKED_DATASET = "RetailDemo"  # @param {type:"string"}
+BQ_PROJECT_ID = "devhelio"  # @param {type:"string"}
+BQ_LINKED_DATASET = "pharma"  # @param {type:"string"}
 BQ_PROCESSED_DATASET = "Teste_txt2sql"  # @param {type:"string"}
 MODEL_ID = "text-bison@001" # @param {type:"string"}
 
