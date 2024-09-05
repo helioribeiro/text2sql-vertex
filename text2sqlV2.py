@@ -17,8 +17,8 @@ import re
 from json import loads, dumps
 
 
-PROJECT_ID = os.environ.get('GCP_PROJECT') #Your Google Cloud Project ID
-LOCATION = os.environ.get('GCP_REGION')   #Your Google Cloud Project Region
+PROJECT_ID = 'devhelio' #Your Google Cloud Project ID
+LOCATION = 'us-central1'  #Your Google Cloud Project Region
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 client = bigquery.Client(project=PROJECT_ID)
 
