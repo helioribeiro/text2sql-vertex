@@ -6,3 +6,5 @@ db_dtypes
 PyPDF2
 backoff
 tqdm
+fsspec
+gcsfs
