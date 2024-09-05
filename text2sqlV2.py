@@ -74,7 +74,7 @@ Answer: {query}
 
 
 
-df = pd.read_csv("gs://demo_rag_t2sql_helio/salesinfo.csv", header=0)
+df = pd.read_csv("gs://demo_rag_t2sql_helio/demo_trainer.csv", header=0)
 
 train_df = df.loc[df["Dataset"] == "Train", ["Question", "SQL Query"]]
 eval_df = df.loc[df["Dataset"] == "Eval", ["Question", "SQL Query"]]
