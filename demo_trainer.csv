@@ -1,5 +1,5 @@
-,Qualified table name,Descriptive table name,Index,Dataset,Task type,Question,SQL Query,Alternatives
-0,csa_4_01_summary_daily,user_action,4.01.01,Train,Simple search,List all actions that contain 'delete' or 'remove' by any user over the last week. Include the principal email and day in the results. Limit results to 20 records and list them in reverse chronological order.,"SELECT
+Qualified table name,Descriptive table name,Index,Dataset,Task type,Question,SQL Query
+csa_4_01_summary_daily,user_action,4.01.01,Train,Simple search,List all actions that contain 'delete' or 'remove' by any user over the last week. Include the principal email and day in the results. Limit results to 20 records and list them in reverse chronological order.,"SELECT
   day,
   principal_email,
   action
@@ -10,8 +10,8 @@ WHERE
   AND (LOWER(action) LIKE '%delete%' OR LOWER(action) LIKE '%remove%')
 ORDER BY
   day DESC, principal_email
-LIMIT 20",
-1,csa_4_01_summary_daily,user_action,4.01.02,Eval,Simple search,"List all destructive actions by any user over the last week. A destructive action is an action that contains any of the words: remove, destroy or delete. Include the principal email and day in the results. Limit results to 20 records and list them in reverse chronological order.","SELECT
+LIMIT 20"
+csa_4_01_summary_daily,user_action,4.01.02,Eval,Simple search,"List all destructive actions by any user over the last week. A destructive action is an action that contains any of the words: remove, destroy or delete. Include the principal email and day in the results. Limit results to 20 records and list them in reverse chronological order.","SELECT
   day,
   principal_email,
   action
@@ -22,8 +22,8 @@ WHERE
   AND (LOWER(action) LIKE '%delete%' OR LOWER(action) LIKE '%destroy%'  OR LOWER(action) LIKE '%remove%')
 ORDER BY
   day DESC, principal_email
-LIMIT 20",
-2,csa_4_01_summary_daily,user_action,4.01.03,Eval,Simple search,"List all actions containing IAM case-insensitive by any unapproved user over the last 7 days, where approved user include 'admin@example.com'"". Limit results to 20 records and list them in reverse chronological order.","SELECT
+LIMIT 20"
+csa_4_01_summary_daily,user_action,4.01.03,Eval,Simple search,"List all actions containing IAM case-insensitive by any unapproved user over the last 7 days, where approved user include 'admin@example.com'"". Limit results to 20 records and list them in reverse chronological order.","SELECT
   day,
   principal_email,
   action
@@ -35,8 +35,8 @@ WHERE
   AND principal_email NOT IN ('admin@example.com')
 ORDER BY
   day DESC, principal_email
-LIMIT 20",
-3,csa_4_01_summary_daily,user_action,4.01.04,Train,Simple search,List all actions by particular user 'user@example.com'. Return results in reverse chronological order.,"SELECT
+LIMIT 20"
+csa_4_01_summary_daily,user_action,4.01.04,Train,Simple search,List all actions by particular user 'user@example.com'. Return results in reverse chronological order.,"SELECT
   day,
   principal_email,
   action
@@ -45,8 +45,8 @@ FROM
 WHERE
   day >=  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
 ORDER BY
-  day DESC",
-4,csa_4_01_summary_daily,user_action,4.01.05,Train,Simple aggregate,Show top user with most number of actions over the last week.,"SELECT
+  day DESC"
+csa_4_01_summary_daily,user_action,4.01.05,Train,Simple aggregate,Show top user with most number of actions over the last week.,"SELECT
   principal_email,
   SUM(counter) AS counter,
 FROM csa_4_01_summary_daily
@@ -56,8 +56,8 @@ GROUP BY
   principal_email
 ORDER BY
   counter DESC
-LIMIT 1",
-5,csa_4_01_summary_daily,user_action,4.01.06,Eval,Simple aggregate,Show top user with least number of actions over the last month.,"SELECT
+LIMIT 1"
+csa_4_01_summary_daily,user_action,4.01.06,Eval,Simple aggregate,Show top user with least number of actions over the last month.,"SELECT
   principal_email,
   SUM(counter) AS counter,
 FROM csa_4_01_summary_daily
@@ -67,8 +67,8 @@ GROUP BY
   principal_email
 ORDER BY
   counter ASC
-LIMIT 1",
-6,csa_4_01_summary_daily,user_action,4.01.07,Train,Simple aggregate,List top 10 users with most number of actions over the last week. Include the list of distinct actions done by each user over that time period.,"SELECT
+LIMIT 1"
+csa_4_01_summary_daily,user_action,4.01.07,Train,Simple aggregate,List top 10 users with most number of actions over the last week. Include the list of distinct actions done by each user over that time period.,"SELECT
   principal_email,
   SUM(counter) AS counter,
   ARRAY_AGG(DISTINCT action IGNORE NULLS) AS actions,
@@ -79,8 +79,8 @@ GROUP BY
   principal_email
 ORDER BY
   counter DESC
-LIMIT 10",
-7,csa_4_01_summary_daily,user_action,4.01.08,Train,Complex aggregate,Show unusually high activity by any user today compared to their average daily count over the last 30 days. Daily count of 3 standard deviations or more above average is considered unusually high.,"SELECT
+LIMIT 10"
+csa_4_01_summary_daily,user_action,4.01.08,Train,Complex aggregate,Show unusually high activity by any user today compared to their average daily count over the last 30 days. Daily count of 3 standard deviations or more above average is considered unusually high.,"SELECT
   principal_email,
   SUM(IF(day >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), counter, 0)) AS current_count,
   AVG(IF(day < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), counter, 0)) AS historical_avg,
@@ -93,8 +93,8 @@ GROUP BY
 HAVING
   current_count >= historical_avg + 3 * historical_std_dev
 ORDER BY
-  current_count DESC",
-8,csa_4_01_summary_daily,user_action,4.01.09,Eval,Complex aggregate,Show unusually high activity by any user today compared to their average daily count over the last 7 days. Daily count of 2 standard deviations or more above average is considered unusually high.,"SELECT
+  current_count DESC"
+csa_4_01_summary_daily,user_action,4.01.09,Eval,Complex aggregate,Show unusually high activity by any user today compared to their average daily count over the last 7 days. Daily count of 2 standard deviations or more above average is considered unusually high.,"SELECT
   principal_email,
   SUM(IF(day >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), counter, 0)) AS current_count,
   AVG(IF(day < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), counter, 0)) AS historical_avg,
@@ -107,8 +107,8 @@ GROUP BY
 HAVING
   current_count >= historical_avg + 2 * historical_std_dev
 ORDER BY
-  current_count DESC",
-9,csa_4_01_summary_daily,user_action,4.01.10,Train,Complex aggregate,Show unusually high variety of actions by any user today compared to their typical number of action types over the last 30 days. A count of 3 standard deviations or more above average is considered unusually high.,"SELECT
+  current_count DESC"
+csa_4_01_summary_daily,user_action,4.01.10,Train,Complex aggregate,Show unusually high variety of actions by any user today compared to their typical number of action types over the last 30 days. A count of 3 standard deviations or more above average is considered unusually high.,"SELECT
   principal_email,
   SUM(IF(day >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), ARRAY_LENGTH(actions), 0)) AS current_count,
   AVG(IF(day < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), ARRAY_LENGTH(actions), 0)) AS historical_avg,
@@ -120,8 +120,8 @@ GROUP BY
   principal_email
 HAVING
   current_count >= historical_avg + 3 * historical_std_dev
-",
-10,csa_4_01_summary_daily,user_action,4.01.11,Eval,Complex aggregate,Show unusually high variety of actions by any user today compared to their typical number of action types over the last 60 days. A count of 2 standard deviations or more above average is considered unusually high.,"SELECT
+"
+csa_4_01_summary_daily,user_action,4.01.11,Eval,Complex aggregate,Show unusually high variety of actions by any user today compared to their typical number of action types over the last 60 days. A count of 2 standard deviations or more above average is considered unusually high.,"SELECT
   principal_email,
   SUM(IF(day >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), ARRAY_LENGTH(actions), 0)) AS current_count,
   AVG(IF(day < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), ARRAY_LENGTH(actions), 0)) AS historical_avg,
@@ -133,8 +133,8 @@ GROUP BY
   principal_email
 HAVING
   current_count >= historical_avg + 2 * historical_std_dev
-",
-11,csa_4_01_summary_daily,user_action,4.01.12,Train,Complex aggregate,Show any new user never seen before this current week. Look over a historical window of 30 days. Limit results to 10 records.,"SELECT
+"
+csa_4_01_summary_daily,user_action,4.01.12,Train,Complex aggregate,Show any new user never seen before this current week. Look over a historical window of 30 days. Limit results to 10 records.,"SELECT
   principal_email,
   IF(MIN(day) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY), 1, 0) AS is_new, 
   MIN(day) as first_instance,
@@ -147,8 +147,8 @@ GROUP BY
   principal_email
 ORDER BY
   counter DESC
-LIMIT 10",
-12,csa_4_01_summary_daily,user_action,4.01.13,Eval,Complex aggregate,Show any new user never seen before today. Look over a historical window of 30 days. Limit results to 10 records.,"SELECT
+LIMIT 10"
+csa_4_01_summary_daily,user_action,4.01.13,Eval,Complex aggregate,Show any new user never seen before today. Look over a historical window of 30 days. Limit results to 10 records.,"SELECT
   principal_email,
   IF(MIN(day) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), 1, 0) AS is_new, 
   MIN(day) as first_instance,
@@ -161,8 +161,8 @@ GROUP BY
   principal_email
 ORDER BY
   counter DESC
-LIMIT 10",
-13,csa_4_01_summary_daily,user_action,4.01.14,Train,Complex aggregate functions with rolling windows,Show unusually high daily activity by any user over the last 30 days compared to their cumulative average daily activity up to that particular day. Return only findings where historical average is based on 5 or more samples. Order findings in reverse chronological order.,"SELECT
+LIMIT 10"
+csa_4_01_summary_daily,user_action,4.01.14,Train,Complex aggregate functions with rolling windows,Show unusually high daily activity by any user over the last 30 days compared to their cumulative average daily activity up to that particular day. Return only findings where historical average is based on 5 or more samples. Order findings in reverse chronological order.,"SELECT
   *
 FROM (
   SELECT
@@ -188,8 +188,8 @@ WHERE
   counter > historical_avg + 2 * historical_std_dev
   AND num_samples >= 5
 ORDER BY
-  day DESC",
-14,csa_4_01_summary_daily,user_action,4.01.15,Eval,Complex aggregate functions with rolling windows,Show unusually high daily activity by any user over the last 90 days compared to their cumulative average daily activity up to that particular day. Any daily activity count of 3 standard deviations or more above cumulative average is considered unusually high.  Return only findings where cumulative average is based on 10 or more samples. Order findings in reverse chronological order.,"SELECT
+  day DESC"
+csa_4_01_summary_daily,user_action,4.01.15,Eval,Complex aggregate functions with rolling windows,Show unusually high daily activity by any user over the last 90 days compared to their cumulative average daily activity up to that particular day. Any daily activity count of 3 standard deviations or more above cumulative average is considered unusually high.  Return only findings where cumulative average is based on 10 or more samples. Order findings in reverse chronological order.,"SELECT
   *
 FROM (
   SELECT
@@ -215,8 +215,8 @@ WHERE
   counter > historical_avg + 3 * historical_std_dev
   AND num_samples >= 10
 ORDER BY
-  day DESC",
-15,csa_4_01_summary_daily,user_action,4.01.16,Train,Simple aggregate,What is the sales per year.,"SELECT
+  day DESC"
+csa_4_01_summary_daily,user_action,4.01.16,Train,Simple Search,What is the sales per year.,"SELECT
     SUM(PRECO) AS TOTAL_VENDA,
     EXTRACT(YEAR FROM  DATA) AS ANO
 FROM
@@ -224,8 +224,8 @@ FROM
 GROUP BY
     ANO
 ORDER BY
-    ANO DESC",
-16,csa_4_01_summary_daily,user_action,4.01.17,Train,Complex aggregate functions with rolling windows,Quais são os 100 produtos mais vendidos por mes.,"WITH vendas as (SELECT
+    ANO DESC"
+csa_4_01_summary_daily,user_action,4.01.17,Train,Complex aggregate functions with rolling windows,What are the 100 most sold products in a year?,"WITH vendas as (SELECT
   PRODUTO AS PRODUTO_RAW,
   EXTRACT(MONTH FROM  DATA) AS MES_RAW,
   SUM(PRECO) AS VENDAS_RAW
@@ -249,8 +249,8 @@ VENDAS,
  row_id
 FROM inde as i
 WHERE row_id <=100
-ORDER BY MES DESC",
-17,csa_4_01_summary_daily,user_action,4.01.18,Train,Complex aggregate functions with rolling windows,Quais são os 10 produtos mais vendidos por mes.,"WITH vendas as (SELECT
+ORDER BY MES DESC"
+csa_4_01_summary_daily,user_action,4.01.18,Train,Complex aggregate functions with rolling windows,What are the 10 most sold products per month?,"WITH vendas as (SELECT
   PRODUTO AS PRODUTO_RAW,
   EXTRACT(MONTH FROM  DATA) AS MES_RAW,
   SUM(PRECO) AS VENDAS_RAW
@@ -274,8 +274,8 @@ VENDAS,
  row_id
 FROM inde as i
 WHERE row_id <=10
-ORDER BY MES DESC",
-18,csa_4_01_summary_daily,user_action,4.01.18,Train,Complex aggregate functions with rolling windows,Qual é a taxa de crescimento de vendas de cada vendedor por ano.,"WITH agg AS (
+ORDER BY MES DESC"
+csa_4_01_summary_daily,user_action,4.01.18,Train,Complex aggregate functions with rolling windows,What is the sales growth rate of each salesperson per year?,"WITH agg AS (
   SELECT
   EXTRACT(YEAR FROM  DATA) AS YEAR_RAW,
   VENDEDOR AS VENDEDOR_RAW,
@@ -288,5 +288,5 @@ SELECT
   VENDAS_RAW AS VENDAS,
   VENDEDOR_RAW AS VENDEDOR,
   LEAD(VENDAS_RAW) OVER (Partition BY VENDEDOR_RAW ORDER BY YEAR_RAW DESC) as VENDA_ANO_PASSADO,
-  ROUND(100*(VENDAS_RAW -  LEAD(VENDAS_RAW) OVER (Partition BY VENDEDOR_RAW ORDER BY YEAR_RAW DESC))/(LEAD(VENDAS_RAW) OVER (Partition BY VENDEDOR_RAW ORDER BY MES_YEAR_RAWRAW DESC)),2) as TAXA_CRESCIMENTO
-FROM agg",
+  ROUND(100*(VENDAS_RAW -  LEAD(VENDAS_RAW) OVER (Partition BY VENDEDOR_RAW ORDER BY YEAR_RAW DESC))/(LEAD(VENDAS_RAW) OVER (Partition BY VENDEDOR_RAW ORDER BY YEAR_RAW DESC)),2) as TAXA_CRESCIMENTO
+FROM agg"
