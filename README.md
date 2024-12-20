@@ -20,8 +20,8 @@ To run the Streamlit Application locally (on cloud shell), we need to perform th
     In Cloud Shell, execute the following commands:
 
     ```bash
-    python3 -m venv gemini-streamlit
-    source gemini-streamlit/bin/activate
+    python3 -m venv text2sql-vertex
+    source text2sql-vertex/bin/activate
     pip install -r requirements.txt
     ```
 
@@ -46,7 +46,7 @@ To run the Streamlit Application locally (on cloud shell), we need to perform th
     In Cloud Shell, execute the following command:
 
     ```bash
-    streamlit run app.py \
+    streamlit run text2sql.py \
       --browser.serverAddress=localhost \
       --server.enableCORS=false \
       --server.enableXsrfProtection=false \

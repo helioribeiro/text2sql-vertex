@@ -14,11 +14,11 @@ import numpy as np
 import pandas as pd
 from vertexai.language_models import TextGenerationModel
 import re
+from json import loads, dumps
 
 
-
-PROJECT_ID = os.environ.get('GCP_PROJECT') #Your Google Cloud Project ID
-LOCATION = os.environ.get('GCP_REGION')   #Your Google Cloud Project Region
+PROJECT_ID = "devhelio" #Your Google Cloud Project ID
+LOCATION = "us-central1"  #Your Google Cloud Project Region
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 client = bigquery.Client(project=PROJECT_ID)
 
@@ -33,6 +33,9 @@ client = bigquery.Client(project=BQ_PROJECT_ID)
 BQ_MAX_BYTES_BILLED = pow(2, 30)  # 1GB
 
 model = TextGenerationModel.from_pretrained(MODEL_ID)
+MODEL_ID2 = "gemini-pro" # @param {type:"string"}
+
+model2 = GenerativeModel(MODEL_ID2)
 table_name = 'sales'
 
 
@@ -82,7 +85,7 @@ for index, row in train_df.iterrows():
         question=row["Question"], query=row["SQL Query"]
     )
 
-
+print(f"Added {str(train_df.shape[0])} pairs as few-shot examples")
 
 
 # Strip text to include only the SQL code block with
@@ -118,7 +121,6 @@ def generate_sql(
     )
     text = response.text
     # Strip text to include only the SQL code block
-
     text = sanitize_output(text)
     print("Response stripped:")
     print(text)
@@ -146,6 +148,43 @@ def execute_sql(query: str):
         return e
     return df
 
+def get_gemini_pro_text_response( model: GenerativeModel,
+                                  contents,
+                                  generation_config: GenerationConfig,
+                                  stream=True):
+
+    safety_settings={
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+    }
+
+
+    responses = model.generate_content(contents,
+                                       generation_config = generation_config,
+                                       safety_settings=safety_settings,
+                                       stream=True)
+
+    final_response = []
+    for response in responses:
+        try:
+            # st.write(response.text)
+            final_response.append(response.text)
+        except IndexError:
+            # st.write(response)
+            final_response.append("")
+            continue
+    return " ".join(final_response)
+
+generation_config = GenerationConfig(
+    temperature=0.1,
+    top_p=0.93,
+    top_k=27,
+    candidate_count=1,
+    max_output_tokens=2048,
+    )
+
 st.header("Vertex AI Gemini API TEXT2SQL", divider="rainbow")
 
 question = st.text_input("Faça sua pergunta \n\n",key="question",value="Qual é a venda da regiao NORTE por vendedor?")
@@ -165,6 +204,17 @@ Answer: "Query here"
 """
 
 generate_t2t = st.button("Me Responda", key="generate_answer")
+
+@st.cache_data
+def resultado_json(response):
+    result = response.to_json(orient="split")
+    return result
+
+@st.cache_data
+def resultado_df(response):
+    return response
+
+
 if generate_t2t and question:
     second_tab1, second_tab2 = st.tabs(["Resposta", "Prompt"])
     with st.spinner("Gerando sua resposta..."):
@@ -178,8 +228,33 @@ if generate_t2t and question:
             ),
             )
             response = execute_sql(query)
+            step = response.to_dataframe()
+            result = resultado_json(step)
+            questao = """
+            Com base na 'response' encontre uma relação de causa e efeito entre os resultados apontados, levando em consideração PRINCIPALMENTE O DATASET, ou seja, as informações encontradas na resposta em si. Portanto, tratando-se de uma farmácia, não vendemos sorvetes, por exemplo. Se atente nos nomes das COLUNAS Além disso:
+            - Senso comum.
+            - Estação do ano em que os produtos foram vendidos, se existir a informação do mês, explicando sobre sazonalidade.
+            - Para que serve o produto e por quê o público o compra.
+            - Tendência de crescimento ou queda das vendas se existir uma tendência clara, para encontrar correlações da venda com outro acontecimento.
+            - O que é o produto.
+            - Se o mês da venda era de férias, festivo, de verão, inverno ou outros. Em resumo, qualquer coisa que represente algo diferente ou especial.
+            - Se existir a informação de região, informar qual é a região e suas particularidades.
+            Retorne sua resposta em pontos que julgar relevantes. Me traga no máximo 5 pontos.
+            PONTOS:
+            """
+            contents = [
+                questao,
+                result
+                ]
+            response2 = get_gemini_pro_text_response(
+                                model2,
+                                contents,
+                                generation_config=generation_config,
+                            )
             if response:
                 st.write("Sua resposta:")
-                st.write(response.to_dataframe())
+                st.write(step)
+                st.write("Sua analise:")
+                st.write(response2)
         with second_tab2:
             st.text(query)
