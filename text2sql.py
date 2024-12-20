@@ -187,7 +187,7 @@ generation_config = GenerationConfig(
 
 st.header("Vertex AI Gemini API TEXT2SQL", divider="rainbow")
 
-question = st.text_input("Faça sua pergunta \n\n",key="question",value="Qual é a venda da regiao NORTE por vendedor?")
+question = st.text_input("Ask your question \n\n",key="question",value="What are the sales in the NORTH region by salesperson?")
 
 prompt_template = f"""
 This is a task converting text into GoogleSQL statement.
@@ -203,7 +203,7 @@ Write GoogleSQL query for following question: {question}
 Answer: "Query here"
 """
 
-generate_t2t = st.button("Me Responda", key="generate_answer")
+generate_t2t = st.button("Answer", key="generate_answer")
 
 @st.cache_data
 def resultado_json(response):
@@ -217,7 +217,7 @@ def resultado_df(response):
 
 if generate_t2t and question:
     second_tab1, second_tab2 = st.tabs(["Resposta", "Prompt"])
-    with st.spinner("Gerando sua resposta..."):
+    with st.spinner("Generating your answer..."):
         with second_tab1:
             query = generate_sql(
             model,
@@ -230,20 +230,21 @@ if generate_t2t and question:
             response = execute_sql(query)
             step = response.to_dataframe()
             result = resultado_json(step)
-            questao = """
-            Com base na 'response' encontre uma relação de causa e efeito entre os resultados apontados, levando em consideração PRINCIPALMENTE O DATASET, ou seja, as informações encontradas na resposta em si. Portanto, tratando-se de uma farmácia, não vendemos sorvetes, por exemplo. Se atente nos nomes das COLUNAS Além disso:
-            - Senso comum.
-            - Estação do ano em que os produtos foram vendidos, se existir a informação do mês, explicando sobre sazonalidade.
-            - Para que serve o produto e por quê o público o compra.
-            - Tendência de crescimento ou queda das vendas se existir uma tendência clara, para encontrar correlações da venda com outro acontecimento.
-            - O que é o produto.
-            - Se o mês da venda era de férias, festivo, de verão, inverno ou outros. Em resumo, qualquer coisa que represente algo diferente ou especial.
-            - Se existir a informação de região, informar qual é a região e suas particularidades.
-            Retorne sua resposta em pontos que julgar relevantes. Me traga no máximo 5 pontos.
-            PONTOS:
+            question_user = """
+            Based on the response, identify a cause-and-effect relationship between the results presented, focusing PRIMARILY on the DATASET, i.e., the information found in the response itself. For instance, considering a pharmacy, we do not sell ice cream. Pay attention to the COLUMN names. Additionally:
+            •	Common sense.
+            •	The season in which the products were sold, if there is information about the month, explaining seasonality.
+            •	The purpose of the product and why the audience buys it.
+            •	The trend of growth or decline in sales if there is a clear trend, to find correlations between sales and another event.
+            •	What the product is.
+            •	If the sales month was during vacation, festive periods, summer, winter, or other seasons. In summary, anything that represents something different or special.
+            •	If regional information is available, specify the region and its characteristics.
+
+            Provide your response in points that you deem relevant. Bring me a maximum of 5 points.
+            POINTS:
             """
             contents = [
-                questao,
+                question_user,
                 result
                 ]
             response2 = get_gemini_pro_text_response(
@@ -252,9 +253,9 @@ if generate_t2t and question:
                                 generation_config=generation_config,
                             )
             if response:
-                st.write("Sua resposta:")
+                st.write("Your answer:")
                 st.write(step)
-                st.write("Sua analise:")
+                st.write("Your analysis:")
                 st.write(response2)
         with second_tab2:
             st.text(query)
